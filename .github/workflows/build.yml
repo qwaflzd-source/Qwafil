@@ -9,16 +9,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Install Unzip Tool
+        run: sudo apt-get update && sudo apt-get install -y unzip
+      - name: Extract ZIP Source
+        run: |
+          unzip -q Flutter-App-Full-SourceCode.zip -d extracted_app
+          ls -la extracted_app
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.16.x'
           channel: 'stable'
       - name: Install Dependencies
-        run: flutter pub get
+        run: |
+          cd extracted_app
+          flutter pub get
       - name: Build APK Release
-        run: flutter build apk --release
+        run: |
+          cd extracted_app
+          flutter build apk --release
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v3
         with:
           name: release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: extracted_app/build/app/outputs/flutter-apk/app-release.apk
